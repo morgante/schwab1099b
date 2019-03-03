@@ -43,8 +43,10 @@ lot of time trying to enter the transaction manually.
    area of the browser, and paste. This won't take any action other than defining a bunch of
    functions.
 
-7. Now do the same for the contents of the `entries.json` file created above. Copy the contents.
-   Paste it into the console window.
+7. Now, copy the contents of the `entries.json` file created above. In the console, assign the 
+   generated JSON to a variable as follows:
+
+   `> entries = [paste entries.json here]`
 
 8. Now the fun begins. In the console, type:
 

@@ -163,9 +163,7 @@ for fn in input_fns:
 
     print_and_zero_totals()
 
-print('entries = ')
 json.dump(short_sales + long_sales, sys.stdout)
-print('')
 
 print('%d short term transaction processed' % len(short_sales), file=sys.stderr)
 print('%d long term transaction processed' % len(long_sales), file=sys.stderr)
