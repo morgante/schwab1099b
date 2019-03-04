@@ -1,7 +1,9 @@
 # Schwab 1099-B Converter
 
-The purpose of these two scripts is to automate entering stock sales from the
-Schwab EAC 1099-B form into TurboTax Online.
+The purpose of these scripts is to automate entering stock sales from the
+Schwab EAC 1099-B form into TurboTax Online or Desktop.
+
+## TurboTax Online
 
 There are several steps to this process, but it does work. And it can save a
 lot of time trying to enter the transaction manually.
@@ -43,8 +45,10 @@ lot of time trying to enter the transaction manually.
    area of the browser, and paste. This won't take any action other than defining a bunch of
    functions.
 
-7. Now do the same for the contents of the `entries.json` file created above. Copy the contents.
-   Paste it into the console window.
+7. Now, copy the contents of the `entries.json` file created above. In the console, assign the 
+   generated JSON to a variable as follows:
+
+   `> entries = [paste entries.json here]`
 
 8. Now the fun begins. In the console, type:
 
@@ -62,3 +66,19 @@ lot of time trying to enter the transaction manually.
     step 8 if you need to add more entries.
 
 11. That's it. Hopefully all of your transactions are now entered into TurboTax.
+
+# TurboTax Desktop
+
+Complete Steps 1 through 3 as described for TurboTax online, obtaining an `entries.json` file. Then,
+instead of using this file in Chrome, run the following command to convert it to a Tax eXchange
+Format (TXF) file that TurboTax Desktop can process:
+
+`$ ./.json-to-txf entries.json > entries.txf`
+
+In TurboTax, import `entries.txf` via the File -> Import -> From Accounting Software menu. Verify
+that the short- and long-term totals imported as expected.
+
+If TurboTax says it needs "more info" for the imported transcations, click through each sale
+manually and select "stock" from the long list of options presented. All other relevant data
+should already be filled in, though it's a good idea to verfiy each sale individually against your
+Form 1099-B.

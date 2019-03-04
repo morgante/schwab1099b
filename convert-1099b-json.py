@@ -3,6 +3,8 @@
 See README.md for instructions on using this script.
 '''
 
+from __future__ import print_function
+
 import sys
 import json
 
@@ -23,14 +25,14 @@ total_num_records = 0
 def print_and_zero_totals():
   global total_num_records, total_shares, total_proceeds, total_basis, total_wash
 
-  print >>sys.stderr, "********"
-  print >>sys.stderr, "Total # records read: %d" % total_num_records
-  print >>sys.stderr, 'Total shares: %d' % total_shares
-  print >>sys.stderr, "Verify these totals with the summary of the last page of the Schwab Statement"
-  print >>sys.stderr, "Total Proceeds: $%.2f" % total_proceeds
-  print >>sys.stderr, "Total Basis: $%.2f" % total_basis
-  print >>sys.stderr, "Total Wash: $%.2f" % total_wash
-  print >>sys.stderr
+  print("********", file=sys.stderr)
+  print("Total # records read: %d" % total_num_records, file=sys.stderr)
+  print('Total shares: %d' % total_shares, file=sys.stderr)
+  print("Verify these totals with the summary of the last page of the Schwab Statement", file=sys.stderr)
+  print("Total Proceeds: $%.2f" % total_proceeds, file=sys.stderr)
+  print("Total Basis: $%.2f" % total_basis, file=sys.stderr)
+  print("Total Wash: $%.2f" % total_wash, file=sys.stderr)
+  print("", file=sys.stderr)
   total_num_records = 0
   total_shares = 0
   total_proceeds = 0
@@ -41,7 +43,7 @@ input_fns = sys.argv[1:]
 for fn in input_fns:
   with open(fn, 'r') as f:
     lines = [l.strip() for l in f.readlines()]
-    print >>sys.stderr, "Read a total of %d lines from %s " % (len(lines), fn)
+    print("Read a total of %d lines from %s " % (len(lines), fn), file=sys.stderr)
 
     input_line = 0
     short_term = True
@@ -67,7 +69,7 @@ for fn in input_fns:
         break
 
       if len(lines) < input_line + 4:
-        #print >>sys.stderr, 'WARNING: Trailing content at end of file: \n%s' % repr(lines[input_line:])
+        #print('WARNING: Trailing content at end of file: \n%s' % repr(lines[input_line:]), file=sys.stderr)
         break
 
       if not (lines[input_line].startswith('3825') or lines[input_line].startswith('0207')):
@@ -78,7 +80,7 @@ for fn in input_fns:
         continue
 
       if verbose:
-        print >>sys.stderr, "Read CUSIP: %s" % lines[input_line]
+        print("Read CUSIP: %s" % lines[input_line], file=sys.stderr)
 
       transaction = {}
       #description, acq_date, sale_date, proceeds, basis, wash]
@@ -89,7 +91,7 @@ for fn in input_fns:
         sys.exit('ERROR: Parsing input line %d: %s' % (input_line+1, lines[input_line]))
 
       if verbose:
-        print >>sys.stderr, "Next line: %s" % lines[input_line]
+        print("Next line: %s" % lines[input_line], file=sys.stderr)
 
       quantity = int(float(parts[0]))
       total_shares += quantity
@@ -101,7 +103,7 @@ for fn in input_fns:
 
       input_line += 1
       if verbose:
-        print >>sys.stderr, "Next line: %s" % lines[input_line]
+        print("Next line: %s" % lines[input_line], file=sys.stderr)
       parts = lines[input_line].split(' ')
       len(parts) == 3 or sys.exit('ERROR: Parsing input line %d: %s' % (input_line+1, lines[input_line]))
       (acq_date, proceeds, basis) = parts
@@ -126,7 +128,7 @@ for fn in input_fns:
 
       input_line += 1
       if verbose:
-        print >>sys.stderr, "Next line: %s" % lines[input_line]
+        print("Next line: %s" % lines[input_line], file=sys.stderr)
       parts = lines[input_line].split(' ')
       len(parts) == 2 or (len(parts) == 3 and wash) or sys.exit('ERROR: Parsing input line %d: %s' % (input_line+1, lines[input_line]))
       sale_date = parts[0]
@@ -149,9 +151,9 @@ for fn in input_fns:
 
       if verbose:
         if wash:
-          print >>sys.stderr, "Read record: (symbol:%s,\tacq_date:%s,\tsale_date:%s,\tquantity:%d,\tproceeds:$%.2f,\tbasis:$%.2f,\twash:$%.2f)" % (symbol, acq_date, sale_date, quantity, proceeds, basis, wash)
+          print("Read record: (symbol:%s,\tacq_date:%s,\tsale_date:%s,\tquantity:%d,\tproceeds:$%.2f,\tbasis:$%.2f,\twash:$%.2f)" % (symbol, acq_date, sale_date, quantity, proceeds, basis, wash), file=sys.stderr)
         else:
-          print >>sys.stderr, "Read record: (symbol:%s,\tacq_date:%s,\tsale_date:%s,\tquantity:%d,\tproceeds:$%.2f,\tbasis:$%.2f)" % (symbol, acq_date, sale_date, quantity, proceeds, basis)
+          print("Read record: (symbol:%s,\tacq_date:%s,\tsale_date:%s,\tquantity:%d,\tproceeds:$%.2f,\tbasis:$%.2f)" % (symbol, acq_date, sale_date, quantity, proceeds, basis), file=sys.stderr)
       total_num_records += 1
 
       total_proceeds += proceeds
@@ -161,9 +163,7 @@ for fn in input_fns:
 
     print_and_zero_totals()
 
-print 'entries = '
 json.dump(short_sales + long_sales, sys.stdout)
-print ''
 
-print >>sys.stderr, '%d short term transaction processed' % len(short_sales)
-print >>sys.stderr, '%d long term transaction processed' % len(long_sales)
+print('%d short term transaction processed' % len(short_sales), file=sys.stderr)
+print('%d long term transaction processed' % len(long_sales), file=sys.stderr)
