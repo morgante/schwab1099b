@@ -87,6 +87,8 @@ function enterOneRow(data, haveMore) {
       .then(clickAndEnter.bind(null, 'edt_03', data['proceeds']))
       .then(clickAndEnter.bind(null, 'edt_04', data['basis']))
       .then(clickAndEnter.bind(null, 'combo_00', data['category']))
+      .then(longPause)
+      .then(focus.bind(null, 'edt_00'))
       .then(shortPause)
       .then(data["wash"] ? handleWashSale.bind(null, data) : click.bind(null, 'Done_00'))
       .then(longPause)
