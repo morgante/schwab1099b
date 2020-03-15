@@ -4,6 +4,26 @@
  * See README.md for instructions.
  */
 
+
+const eltIds = {
+  'desc' : 'stk-transaction-summary-entry-views-0-fields-4-input-DescOfPropertyPP',
+  'acq_date_radio' : 'stk-transaction-summary-entry-views-0-fields-5-choice-IsDateAcquiredALiteralInd',
+  'acq' : 'stk-transaction-summary-entry-views-0-fields-5-choice-IsDateAcquiredALiteralInd-choices-0-choiceDetail-input-DateAcquiredDtPP',
+  'sale' : 'stk-transaction-summary-entry-views-0-fields-7-input-DateSoldOrDisposedDtPP',
+  'proceeds' : 'stk-transaction-summary-entry-views-0-fields-8-input-ProceedsAmtPP',
+  'basis' : 'stk-transaction-summary-entry-views-0-fields-9-input-CostBasisAmtPP',
+  'category' : 'stk-transaction-summary-entry-views-0-fields-3-choice-Form8949CodePP',
+  'continue' : 'stk-transaction-summary-entry-views-0-actions-1-action_Next',
+  'more_boxes' : 'stk-transaction-summary-entry-views-0-fields-11-multiSelect-choices-0',
+  'wash' : 'stk-transaction-summary-entry-views-0-fields-12-collection-values-0-fieldCollection-values-1-input-WashSaleLossDisallowedAmtPP',
+  'continue2' : 'stk-uncommon-views-0-actions-1-action_Next',
+  'add_another' : 'stk-transaction-gateway-views-5-primaryInfo-0-table-SecurityDetailPP-actions-0-action_AddItem',
+}
+
+function selectValueFor(category) {
+  return "stk-transaction-summary-entry-views-0-fields-3-choice-Form8949CodePP-choices-" + category;
+}
+
 function waitFor(millisecs) {
   return new Promise(function(resolve, reject) {
     window.setTimeout(function() { resolve(true); }, millisecs);
@@ -71,31 +91,44 @@ function clickAndEnter(eltId, data) {
       .then(enterData.bind(null, eltId, data));
 }
 
-function handleWashSale(data) {
-  return click('Ill_00')
-    .then(shortPause)
-    .then(clickAndEnter.bind(null, 'edt_01', data["wash"]))
-    .then(click.bind(null, 'Done_00'));
+function dispatchChangeEvent(eltId) {
+  return new Promise(function(resolve, reject) {
+    let evt = new Event('change', {'bubbles': true, 'cancelable': false});
+    getElement(eltId).dispatchEvent(evt);
+    resolve(true);
+  });
 }
 
 function enterOneRow(data, haveMore) {
-  return click('txtblk_00')
+  let promise = shortPause()
+      .then(clickAndEnter.bind(null, eltIds['desc'], data['desc']))
       .then(shortPause)
-      .then(clickAndEnter.bind(null, 'edt_00', data['desc']))
-      .then(clickAndEnter.bind(null, 'edt_01', data['acq']))
-      .then(clickAndEnter.bind(null, 'edt_02', data['sale']))
-      .then(clickAndEnter.bind(null, 'edt_03', data['proceeds']))
-      .then(clickAndEnter.bind(null, 'edt_04', data['basis']))
-      .then(clickAndEnter.bind(null, 'combo_00', data['category']))
+      .then(clickAndEnter.bind(null, eltIds['acq'], data['acq']))
+      .then(shortPause)
+      .then(clickAndEnter.bind(null, eltIds['sale'], data['sale']))
+      .then(shortPause)
+      .then(clickAndEnter.bind(null, eltIds['proceeds'], data['proceeds']))
+      .then(shortPause)
+      .then(clickAndEnter.bind(null, eltIds['basis'], data['basis']))
+      .then(shortPause)
+      .then(clickAndEnter.bind(null, eltIds['category'], selectValueFor(data['category'])))
+      .then(shortPause)
+      .then(dispatchChangeEvent.bind(null, eltIds['category']))
+      .then(shortPause)
+      .then(click.bind(null, eltIds['more_boxes']))
+      .then(shortPause)
+      .then(data["wash"] ? clickAndEnter.bind(null, eltIds['wash'], data["wash"]) : shortPause())
+      .then(shortPause)
+      .then(click.bind(null, eltIds['continue']))
       .then(longPause)
-      .then(focus.bind(null, 'edt_00'))
-      .then(shortPause)
-      .then(data["wash"] ? handleWashSale.bind(null, data) : click.bind(null, 'Done_00'))
-      .then(longPause)
-      .then(click.bind(null, haveMore ? 'txtblk_00_0' : 'txtblk_01_0'))
-      .then(shortPause)
-      .then(click.bind(null, 'Continue_00'))
-      .then(longPause);
+      .then(click.bind(null, eltIds['continue2']));
+    
+  if (haveMore) {
+      return promise
+          .then(longPause)
+          .then(click.bind(null, eltIds['add_another']));
+  }
+  return promise;
 }
 
 function enterAll(entries) {
