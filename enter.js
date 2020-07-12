@@ -12,6 +12,7 @@ const eltIds = {
   'sale' : 'stk-transaction-summary-entry-views-0-fields-7-input-DateSoldOrDisposedDtPP',
   'proceeds' : 'stk-transaction-summary-entry-views-0-fields-8-input-ProceedsAmtPP',
   'basis' : 'stk-transaction-summary-entry-views-0-fields-9-input-CostBasisAmtPP',
+  'type' : 'stk-transaction-summary-entry-views-0-fields-0-staticSwitch-1-choice-InvestmentType',
   'category' : 'stk-transaction-summary-entry-views-0-fields-3-choice-Form8949CodePP',
   'continue' : 'stk-transaction-summary-entry-views-0-actions-1-action_Next',
   'more_boxes' : 'stk-transaction-summary-entry-views-0-fields-11-multiSelect-choices-0',
@@ -22,6 +23,10 @@ const eltIds = {
 
 function selectValueFor(category) {
   return "stk-transaction-summary-entry-views-0-fields-3-choice-Form8949CodePP-choices-" + category;
+}
+
+function selectType() {
+  return "stk-transaction-summary-entry-views-0-fields-0-staticSwitch-1-choice-InvestmentType-choices-3";
 }
 
 function waitFor(millisecs) {
@@ -111,6 +116,10 @@ function enterOneRow(data, haveMore) {
       .then(shortPause)
       .then(clickAndEnter.bind(null, eltIds['basis'], data['basis']))
       .then(shortPause)
+      .then(clickAndEnter.bind(null, eltIds['type'], selectType()))
+      .then(shortPause)
+      .then(dispatchChangeEvent.bind(null, eltIds['type']))
+      .then(shortPause)
       .then(clickAndEnter.bind(null, eltIds['category'], selectValueFor(data['category'])))
       .then(shortPause)
       .then(dispatchChangeEvent.bind(null, eltIds['category']))
@@ -119,9 +128,7 @@ function enterOneRow(data, haveMore) {
       .then(shortPause)
       .then(data["wash"] ? clickAndEnter.bind(null, eltIds['wash'], data["wash"]) : shortPause())
       .then(shortPause)
-      .then(click.bind(null, eltIds['continue']))
-      .then(longPause)
-      .then(click.bind(null, eltIds['continue2']));
+      .then(click.bind(null, eltIds['continue']));
     
   if (haveMore) {
       return promise
